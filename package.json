@@ -1,0 +1,25 @@
+{
+  "name": "ga4-mcp-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Read-only Google Analytics 4 MCP server on Cloudflare Workers",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --env=\"\"",
+    "deploy": "wrangler deploy --env=\"\"",
+    "typecheck": "tsc --noEmit",
+    "dry-run": "wrangler deploy --dry-run --outdir=dist --env=\"\"",
+    "tail": "wrangler tail --env=\"\" --format pretty"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "^0.10.3",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "agents": "^0.20.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260810.1",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.120.0"
+  }
+}

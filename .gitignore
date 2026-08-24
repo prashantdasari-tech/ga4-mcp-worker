@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------------------
+# Secrets. Nothing in this block may ever reach the remote.
+# ---------------------------------------------------------------------------
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Google OAuth client secret downloads (the "Download JSON" button on the
+# Credentials page produces files named like client_secret_1234-abc.apps...json)
+*client_secret*.json
+client_secret*.json
+
+# Application Default Credentials, wherever someone may have copied it
+application_default_credentials.json
+adc.json
+*service-account*.json
+*service_account*.json
+gcloud-key*.json
+
+# Generic credential shapes
+*.pem
+*.p12
+*.key
+credentials.json
+token.json
+
+# ---------------------------------------------------------------------------
+# Build / tooling
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+dist-*/
+.wrangler/
+.mf/
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Environment / editor / OS
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

@@ -1,0 +1,73 @@
+name = "ga4-mcp-worker"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+# REQUIRED. The @modelcontextprotocol/sdk pulls in Node built-ins (node:crypto,
+# node:stream, node:buffer, ...). Without nodejs_compat the Worker fails to
+# bundle, or fails at runtime with "No such module 'node:...'".
+# Do not remove this line.
+compatibility_flags = ["nodejs_compat"]
+
+# Plain (non-secret) variables. Safe to commit.
+[vars]
+# Zuddl's canonical GA4 property: "New zuddl website GA4 property" (G-JWBQ2Z84QF).
+# Used only when a tool call omits `property_id`. Every tool still accepts an
+# explicit property_id, so the server stays property-agnostic.
+DEFAULT_PROPERTY_ID = "314138239"
+
+# AUTH MODE — proven on staging 2026-08-11, now the production mode.
+#   "secret" = one shared GOOGLE_REFRESH_TOKEN + SHARED_SECRET in x-api-key.
+#              (retired — kept here only as documentation of the old mode)
+#   "oauth"  = each teammate signs in with Google; no shared credential.
+#              Needs OAUTH_KV bound (below) and the /callback redirect URI
+#              registered on the Google OAuth client. Everyone connecting
+#              via the old x-api-key method must remove and re-add the
+#              connector — that auth method no longer applies once this
+#              is "oauth".
+AUTH_MODE = "oauth"
+
+# Only @zuddl.com Google accounts may complete sign-in. Checked server-side in
+# /callback against the id_token, not just passed as a UI hint to Google.
+# Remove this line to allow any Google account the consent screen permits.
+ALLOWED_EMAIL_DOMAIN = "zuddl.com"
+
+# The MCP session lives in a Durable Object, one per connected client.
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "GA4MCP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GA4MCP"]
+
+# Grant storage for OAuth mode. Holds one record per signed-in user; the Google
+# refresh token inside each record is encrypted with AES-GCM by the OAuth
+# provider library. userId and metadata are NOT encrypted, which is why grants
+# are keyed on Google's opaque `sub` rather than on email.
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "2de9947acb9e473686bd35ae5cf62dbf"
+
+# Workers Logs — needed for `wrangler tail` history and for querying the JSON
+# log lines this Worker emits. See PRODUCTION.md § "Monitoring".
+#
+# The top-level `enabled` is the legacy on/off switch; `logs`/`traces` below are
+# the granular controls (Cloudflare dashboard → Worker → Observability). Both
+# are set explicitly here so a redeploy can't silently reset what the
+# dashboard shows — that's what its own "Update your Wrangler config" nudge
+# is for. `persist = true` is what makes logs/traces queryable in the
+# dashboard rather than only visible live via `wrangler tail`.
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+persist = true
+head_sampling_rate = 1

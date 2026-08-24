@@ -1,0 +1,27 @@
+# Copy to `.dev.vars` for local development with `wrangler dev`.
+#
+#   cp .dev.vars.example .dev.vars
+#
+# `.dev.vars` is gitignored. NEVER commit it, paste it into a chat, drop it in a
+# Google Doc, or send it over Slack. If GOOGLE_CLIENT_SECRET leaks, rotate it —
+# see PRODUCTION.md § 4.
+#
+# In production these are NOT read from this file. They are set with
+# `wrangler secret put <NAME>` and stored encrypted by Cloudflare. This file
+# only exists so `wrangler dev` can run against real Google APIs locally.
+#
+# This server runs per-user OAuth (AUTH_MODE = "oauth" in wrangler.toml): each
+# teammate signs in with their own Google account, so there is no shared
+# refresh token and no shared secret to configure here. Only the app's own
+# registration is needed — see SETUP-GUIDE.md Part 1.
+
+# --- Google OAuth client (Google Cloud Console → APIs & Services → Credentials
+# --- → your "Web application" OAuth 2.0 Client ID). Created in SETUP-GUIDE Part 1.4.
+GOOGLE_CLIENT_ID="000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx"
+
+# --- OAUTH_KV is a binding (see [[kv_namespaces]] in wrangler.toml), not a secret,
+# --- so it isn't set here. `wrangler dev` uses a local KV emulation automatically.
+
+# --- Optional: restrict local sign-in the same way production does.
+ALLOWED_EMAIL_DOMAIN="zuddl.com"
